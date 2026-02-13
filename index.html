@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Forever ❤️</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #ff4d6d;
+            --secondary: #ff758f;
+            --bg: #fff0f3;
+            --dark: #590d22;
+            --gold: #ffd700;
+        }
+
+        body {
+            background-color: var(--bg);
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        #container {
+            background: white;
+            padding: 30px;
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(255, 77, 109, 0.2);
+            max-width: 450px;
+            width: 90%;
+            min-height: 520px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* --- CAT LOADER --- */
+        #cat-loader {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            border-radius: 30px;
+            z-index: 20;
+        }
+        .cat-head {
+            width: 60px; height: 50px; background: var(--primary);
+            border-radius: 50% 50% 40% 40%; position: relative;
+            animation: bob 1s infinite ease-in-out alternate;
+        }
+        .ear { width: 20px; height: 20px; background: var(--primary); position: absolute; top: -10px; border-radius: 5px; }
+        .ear.left { left: 5px; transform: rotate(-15deg); }
+        .ear.right { right: 5px; transform: rotate(15deg); }
+        .eye { width: 6px; height: 6px; background: white; border-radius: 50%; position: absolute; top: 20px; }
+        .eye.left { left: 15px; }
+        .eye.right { right: 35px; }
+        @keyframes bob { 0% { transform: translateY(0); } 100% { transform: translateY(-10px); } }
+
+        /* --- FINGERPRINT LOCK --- */
+        .scanner-body { display: flex; flex-direction: column; align-items: center; }
+        .fingerprint { width: 100px; height: 100px; fill: var(--primary); cursor: pointer; animation: pulse 2s infinite; }
+        .scan-line { width: 100px; height: 2px; background: var(--primary); position: absolute; top: 40%; box-shadow: 0 0 10px var(--primary); display: none; animation: scan 2s linear infinite; }
+        @keyframes scan { 0% { top: 35%; } 50% { top: 55%; } 100% { top: 35%; } }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+        /* --- UI ELEMENTS --- */
+        .hidden { display: none !important; }
+        .photo-frame { width: 250px; height: 250px; border-radius: 50%; margin: 0 auto 15px; border: 4px solid var(--primary); overflow: hidden; background: #f8f9fa; }
+        .photo-frame img { width: 100%; height: 100%; object-fit: cover; }
+        .day-name { font-family: 'Great Vibes', cursive; font-size: 2.5rem; color: var(--dark); margin: 5px 0; }
+        .day-message { font-size: 0.95rem; color: #800f2f; margin-bottom: 20px; }
+        button { background: var(--primary); color: white; border: none; padding: 12px 28px; font-size: 1rem; border-radius: 50px; cursor: pointer; box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4); transition: 0.3s; margin: 5px; }
+
+        /* --- COUPONS --- */
+        #coupon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .coupon { background: white; border: 2px dashed var(--primary); border-radius: 12px; padding: 10px; font-size: 0.8rem; font-weight: 600; color: var(--dark); cursor: pointer; transition: 0.2s; }
+        .coupon:hover { transform: scale(1.05); background: var(--bg); }
+        #coupon-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 5000; display: none; justify-content: center; align-items: center; }
+        #expanded-coupon { background: white; padding: 40px; border-radius: 20px; text-align: center; border: 4px dashed var(--primary); transform: scale(0); transition: 0.4s; }
+
+        /* --- HEART LOCK & GLOW --- */
+        .heart-lock {
+            font-size: 80px; color: var(--primary); cursor: default;
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: inline-block;
+            text-shadow: 0 0 10px rgba(255, 77, 109, 0.3);
+            animation: heartBeat 1.5s ease-in-out infinite;
+        }
+        @keyframes heartBeat {
+            0% { transform: scale(1); filter: drop-shadow(0 0 5px var(--primary)); }
+            50% { transform: scale(1.1); filter: drop-shadow(0 0 20px var(--primary)); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 5px var(--primary)); }
+        }
+        .heart-unlock-anim { transform: scale(5) !important; opacity: 0; }
+        .vault-input { font-size: 2rem; padding: 10px; width: 200px; text-align: center; letter-spacing: 10px; border: 2px solid #ccc; border-radius: 10px; margin: 20px 0; outline: none; }
+        .vault-input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(255, 77, 109, 0.5); }
+
+        /* --- ENVELOPE --- */
+        .envelope-wrapper { position: relative; width: 220px; height: 140px; background: var(--primary); margin: 20px auto; border-radius: 0 0 10px 10px; cursor: pointer; }
+        .flap { position: absolute; top: 0; left: 0; border-left: 110px solid transparent; border-right: 110px solid transparent; border-top: 70px solid var(--secondary); transform-origin: top; transition: 0.4s; z-index: 3; }
+        .envelope-wrapper.open .flap { transform: rotateX(180deg); }
+        .letter { position: absolute; top: 5px; left: 10px; width: 200px; background: white; z-index: 2; padding: 15px; transition: 0.8s; border: 1px solid #ddd; box-sizing: border-box; }
+        .envelope-wrapper.zoomed .letter { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1.5); width: 300px; z-index: 1000; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+        #typewriter { font-family: 'Great Vibes', cursive; font-size: 1.5rem; color: var(--primary); min-height: 1.5rem; line-height: 1.2; }
+
+        /* --- FINAL --- */
+        #video-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 2000; transform: scale(0); transition: 0.6s; }
+        .video-container-open { transform: scale(1) !important; }
+        video { width: 90%; max-width: 350px; border: 5px solid white; border-radius: 10px; }
+        #final-closure { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #ff4d6d, #590d22); display: none; flex-direction: column; justify-content: center; align-items: center; color: white; z-index: 3000; opacity: 0; transition: 1s; }
+        #cinematic-fade { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; opacity: 0; z-index: 2500; display: none; transition: 0.4s; }
+        .flying-heart { position: fixed; bottom: -50px; animation: flyUp 4s linear forwards; }
+        @keyframes flyUp { to { transform: translateY(-110vh) rotate(360deg); opacity: 0; } }
+        .error-shake { animation: shake 0.5s; border-color: red !important; }
+        @keyframes shake { 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
+        #yes-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 5000; display: none; justify-content: center; align-items: center; }
+        #yes-modal { background: white; padding: 40px; border-radius: 20px; text-align: center; border: 4px dashed var(--primary); transform: scale(0); transition: 0.4s; }
+        #yes-modal h2 { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 3.5rem; color: var(--primary); margin: 0; }
+    </style>
+</head>
+<body>
+
+<div id="coupon-overlay" onclick="closeCoupon()">
+    <div id="expanded-coupon" onclick="event.stopPropagation()">
+        <h2 id="popup-title" style="font-family: 'Great Vibes'; font-size: 2.5rem; color: var(--primary);"></h2>
+        <p>Voucher Redeemed! ❤️</p>
+        <button onclick="closeCoupon()">Close</button>
+    </div>
+</div>
+
+<div id="yes-overlay">
+    <div id="yes-modal">
+        <h2>YES!</h2>
+        <p>I got something for you here...</p>
+        <button onclick="goToMail()">Click</button>
+    </div>
+</div>
+
+<div id="video-overlay">
+    <video id="myVideo" controls><source src="final vid.mp4" type="video/mp4"></video>
+</div>
+
+<div id="final-closure">
+    <h1 style="font-family: 'Great Vibes', cursive; font-size: 3.5rem;">Happy Valentine's Day!</h1>
+    <p style="font-size: 1.2rem;">I love you to infinity! ❤️</p>
+</div>
+
+<div id="cinematic-fade"></div>
+
+<div id="container">
+    <div id="cat-loader">
+        <div class="cat-head"><div class="ear left"></div><div class="ear right"></div><div class="eye left"></div><div class="eye right"></div></div>
+        <p style="margin-top: 15px; color: var(--primary); font-weight: 600;">Loading Love...</p>
+    </div>
+
+    <div id="content-box">
+        <div class="scanner-body">
+            <div class="scan-line" id="line"></div>
+            <svg class="fingerprint" viewBox="0 0 512 512" onclick="startScan()">
+                <path d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256 256-114.6 256-256S397.4 0 256 0zm0 472c-119.3 0-216-96.7-216-216S136.7 40 256 40s216 96.7 216 216-96.7 216-216 216z"/>
+                <path d="M256 80c-97.2 0-176 78.8-176 176s78.8 176 176 176 176-78.8 176-176-78.8-176-176-176zm0 312c-75.1 0-136-60.9-136-136s60.9-136 136-136 136 60.9 136 136-60.9 136-136 136z"/>
+            </svg>
+            <h3 id="status-text" style="color:var(--primary);">Fingerprint Lock</h3>
+            <p style="font-size: 0.8rem; opacity: 0.6;">Touch to scan heart</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const daysData = [
+        { title: "Rose Day", img: "rose.png", msg: "Here's roses for you." },
+        { title: "Propose Day", img: "propose.png", msg: "Will u be my forever??" },
+        { title: "Chocolate Day", img: "chocolate.png", msg: "Sweeter than any treat." },
+        { title: "Teddy Day", img: "teddy.png", msg: "Lemme be your teddy" },
+        { title: "Promise Day", img: "promise.png", msg: "Always by your side." },
+        { title: "Hug Day", img: "hug.png", msg: "Giving you virtual hug" },
+        { title: "Kiss Day", img: "kiss.png", msg: "Gonna kiss you soon" }
+    ];
+
+    let currentDayIndex = 0;
+    const contentBox = document.getElementById('content-box');
+    const loader = document.getElementById('cat-loader');
+
+    function startScan() {
+        document.getElementById('line').style.display = 'block';
+        document.getElementById('status-text').innerText = "Verifying...";
+        setTimeout(() => {
+            document.getElementById('status-text').innerText = "Access Granted! ❤️";
+            document.getElementById('line').style.display = 'none';
+            setTimeout(showTransition, 800);
+        }, 2000);
+    }
+
+    function showTransition() {
+        contentBox.classList.add('hidden');
+        loader.style.display = 'flex';
+        setTimeout(() => {
+            loader.style.display = 'none';
+            contentBox.classList.remove('hidden');
+            if (currentDayIndex < daysData.length) { renderDay(); currentDayIndex++; }
+            else { showFinalSurprise(); }
+        }, 1200);
+    }
+
+    function renderDay() {
+        const data = daysData[currentDayIndex];
+        contentBox.innerHTML = `
+            <div class="photo-frame"><img src="${data.img}"></div>
+            <div class="day-name">${data.title}</div>
+            <p class="day-message">${data.msg}</p>
+            <button onclick="showTransition()">></button>
+        `;
+    }
+
+    function showFinalSurprise() {
+        contentBox.innerHTML = `
+            <h2 style="color:var(--primary);">Will U be my Valentine?</h2>
+            <div style="margin-top:20px; height: 100px; position: relative;">
+                <button id="yesBtn" onclick="triggerYesPopup()">YES!</button>
+                <button id="noBtn" style="position:absolute; background:#adb5bd; transition: 0.2s ease; z-index: 999;" 
+                    onmouseover="moveNoBtn()" ontouchstart="moveNoBtn()">No</button>
+            </div>
+        `;
+    }
+
+    // UPDATED NO BUTTON LOGIC
+    function moveNoBtn() {
+        const noBtn = document.getElementById('noBtn');
+        const maxX = window.innerWidth - noBtn.offsetWidth;
+        const maxY = window.innerHeight - noBtn.offsetHeight;
+        
+        const randomX = Math.floor(Math.random() * maxX);
+        const randomY = Math.floor(Math.random() * maxY);
+        
+        noBtn.style.position = 'fixed';
+        noBtn.style.left = randomX + 'px';
+        noBtn.style.top = randomY + 'px';
+    }
+
+    function triggerYesPopup() {
+        document.getElementById('yes-overlay').style.display = 'flex';
+        setTimeout(() => { document.getElementById('yes-modal').style.transform = 'scale(1)'; }, 10);
+        confetti({ particleCount: 200, spread: 100 });
+    }
+
+    function goToMail() {
+        document.getElementById('yes-overlay').style.display = 'none';
+        contentBox.innerHTML = `
+            <div class="envelope-wrapper" id="envelope" onclick="openAndZoom()">
+                <div class="flap"></div>
+                <div class="letter"><div id="typewriter"></div><div id="after-typing" class="hidden">
+                    <button onclick="startTask(event)">Gift🎁</button>
+                </div></div>
+            </div>`;
+    }
+
+    function openAndZoom() {
+        document.getElementById('envelope').classList.add('open');
+        setTimeout(() => { 
+            document.getElementById('envelope').classList.add('zoomed'); 
+            setTimeout(() => { startTyping("Even though we are miles apart, my heart feels close to you every single day. I cant wait until i can hold u in my arms again, but until then, know that you're always on my mind and forever in my heart. Happy Valentine's Day, love ❤️"); }, 800);
+        }, 500);
+    }
+
+    function startTyping(text) {
+        const div = document.getElementById('typewriter');
+        let i = 0;
+        function type() {
+            if (i < text.length) { div.innerHTML += text.charAt(i); i++; setTimeout(type, 60); }
+            else { document.getElementById('after-typing').classList.remove('hidden'); }
+        }
+        type();
+    }
+
+    function startTask(e) {
+        e.stopPropagation();
+        contentBox.innerHTML = `
+            <div class="day-name" style="font-size: 1.5rem;">Catch 10 Hearts!</div>
+            <div id="game-area" style="height: 180px; position: relative; border: 2px dashed var(--primary); border-radius:15px; overflow:hidden;">
+                <div id="target-heart" onclick="catchHeart()" style="font-size:40px; position:absolute; left:40%; top:30%; cursor:pointer;">❤️</div>
+            </div>`;
+    }
+
+    let clicks = 0;
+    function catchHeart() {
+        clicks++;
+        if (clicks >= 10) { 
+            contentBox.innerHTML = `
+                <div class="day-name" style="font-size: 1.5rem;">How much do you love me?</div>
+                <button onclick="this.innerText='❌'">10x</button>
+                <button onclick="claimPrizes()">Infinity!</button>
+                <button onclick="this.innerText='❌'">1000x</button>`;
+        } else {
+            const h = document.getElementById('target-heart');
+            h.style.left = Math.random()*80+'%'; h.style.top = Math.random()*70+'%';
+        }
+    }
+
+    function claimPrizes() {
+        contentBox.innerHTML = `
+            <div class="day-name" style="font-size: 1.8rem;">Your Vouchers</div>
+            <div id="coupon-grid">
+                <div class="coupon" onclick="openCoupon('Unlimited free hugs ')">Unlimited free hugs </div>
+                <div class="coupon" onclick="openCoupon('Evergreen love for you 🌲')">Evergreen love for you 🌲</div>
+                <div class="coupon" onclick="openCoupon('Extra kisses for free 💋')">Extra kisses for free 💋</div>
+                <div class="coupon" onclick="openCoupon('Free ride anywhere 🚗')">Free ride anywhere 🚗</div>
+                <div class="coupon" onclick="openCoupon('Win any argument ⚖️')">Win any argument ⚖️</div>
+                <div class="coupon" onclick="openCoupon('Unlimited flowers 💐')">Unlimited flowers 💐</div>
+            </div>
+            <button onclick="showVault()" style="background:var(--dark); margin-top:15px; border:2px solid var(--gold);">🔒 Unlock Vault</button>`;
+        setInterval(spawnHeart, 600);
+    }
+
+    function openCoupon(text) {
+        document.getElementById('popup-title').innerText = text;
+        document.getElementById('coupon-overlay').style.display = 'flex';
+        setTimeout(() => { document.getElementById('expanded-coupon').style.transform = 'scale(1)'; }, 10);
+    }
+
+    function closeCoupon() {
+        document.getElementById('expanded-coupon').style.transform = 'scale(0)';
+        setTimeout(() => { document.getElementById('coupon-overlay').style.display = 'none'; }, 300);
+    }
+
+    function showVault() {
+        contentBox.innerHTML = `
+            <div class="day-name" style="font-size: 1.8rem;">One step away for the Surprise!!</div>
+            <div class="heart-lock" id="heartLock">❤️</div>
+            <br><input type="password" id="vaultInput" class="vault-input" maxlength="6" placeholder="******">
+            <br><button onclick="checkCode()">Unlock</button>
+            <button onclick="alert('Hint: A special day (DDMMYY)')" style="background:#ccc; color:#333;">Hint 💡</button>`;
+    }
+
+    function checkCode() {
+        const input = document.getElementById('vaultInput');
+        if (input.value === '091223') {
+            document.getElementById('heartLock').classList.add('heart-unlock-anim');
+            confetti({ particleCount: 300, spread: 150 });
+            setTimeout(playVideo, 800);
+        } else {
+            input.classList.add('error-shake');
+            setTimeout(() => input.classList.remove('error-shake'), 500);
+        }
+    }
+
+    function playVideo() {
+        const overlay = document.getElementById('video-overlay');
+        overlay.style.display = 'flex';
+        setTimeout(() => overlay.classList.add('video-container-open'), 50);
+        const video = document.getElementById('myVideo');
+        video.play().catch(e => console.log("Autoplay blocked, user must click play"));
+        
+        video.onended = () => {
+            document.getElementById('cinematic-fade').style.display = 'block';
+            setTimeout(() => { 
+                document.getElementById('cinematic-fade').style.opacity = '1';
+                overlay.style.display = 'none';
+                document.getElementById('container').style.display = 'none';
+                const closure = document.getElementById('final-closure');
+                closure.style.display = 'flex';
+                setTimeout(() => { closure.style.opacity = '1'; document.getElementById('cinematic-fade').style.opacity = '0'; }, 600);
+            }, 400);
+        };
+    }
+
+    function spawnHeart() {
+        const h = document.createElement('div'); h.innerHTML = '❤️'; h.className = 'flying-heart';
+        h.style.left = Math.random()*100+'vw'; h.style.fontSize = Math.random()*20+15+'px';
+        document.body.appendChild(h); setTimeout(() => h.remove(), 4000);
+    }
+</script>
+</body>
+</html>
